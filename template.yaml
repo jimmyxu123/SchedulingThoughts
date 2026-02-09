@@ -1,60 +1,49 @@
-theme: default # or dark
-organization: 'University of Maryland'
-title: 'Scheduling Thoughts'
-subtitle: 'Learning the Order of Thought in Diffusion Language Models'
+# 1. Base Configuration
+basePath: /SchedulingThoughts
+title: "Scheduling Thoughts"
+subtitle: "Learning the Order of Thought in Diffusion Language Models"
 
-# Header Links
-resources:
-  paper: 'https://arxiv.org/abs/your-link' # Replace with your actual ArXiv link
-  code: 'https://github.com/your-username/your-repo' # Replace with your code link
-
-# Authors
+# 2. Authors (Corrected with your affiliations)
 authors:
-  - name: Jiawei Xu
-    url: 'https://your-website.com' # Optional
+  - name: "Jiawei Xu"
     affiliation: 1
-  - name: Minghui Liu
+  - name: "Minghui Liu"
     affiliation: 1
-  - name: Aakriti Agrawal
+  - name: "Aakriti Agrawal"
     affiliation: 1
-  - name: Yifan Chen
+  - name: "Yifan Chen"
     affiliation: 2
-  - name: Furong Huang
+  - name: "Furong Huang"
     affiliation: 1
 
 affiliations:
   - id: 1
-    name: University of Maryland
+    name: "University of Maryland"
   - id: 2
-    name: UCLA
+    name: "UCLA"
 
-# Main Content
+# 3. Project Links
+links:
+  - name: "Code"
+    url: "https://github.com/jimmyxu123/SchedulingThoughts"
+  - name: "Paper"
+    url: "#" # Replace with your ArXiv link later
+
+# 4. Content
 abstract: |
-  Masked diffusion language models (MDMs) decode by iteratively unmasking tokens. 
-  While the sequence of unmasking—the **"order of thought"**—crucially impacts 
-  generation quality, it is usually determined by simple heuristics. 
-  We introduce **Self-Aware Scheduling (SAS)**, a method that learns a lightweight 
-  order policy using **Group Relative Policy Optimization (GRPO)**. 
+  Masked diffusion language models decode by iteratively unmasking tokens. While the unmasking order defines an **"order of thought"** that strongly influences generation quality, it is typically chosen heuristically. We introduce **Self-Aware Scheduling (SAS)**, which learns a lightweight order policy using Group Relative Policy Optimization (GRPO). SAS improves Sudoku accuracy from 82.0% to 91.8% and reaches 97.5% with second-stage fine-tuning. On GSM8K, SAS improves pass@1 from 64% to 76%.
 
 sections:
-  - title: Key Contributions
+  - title: "The Self-Aware Reward"
     content: |
-      * **Principled Policy Optimization:** We treat unmasking order as a reinforcement learning problem.
-      * **SAS Framework:** Learns a lightweight policy for a frozen denoiser.
-      * **Performance Gains:** Significant improvements in Sudoku accuracy (up to 97.5%) and mathematical reasoning on GSM8K (76%).
+      We derive a tractable upper bound on the sequential decoding mismatch using KL divergence. This induces a dense reward over trajectories:
+      $$\mathcal{R}(\tau) = \sum_{t=1}^{L} \log p(x_{o_t} | x_{<t}, \text{mask})$$
+      By maximizing this reward, the policy learns to select tokens that the model is most "confident" about in context.
 
-  - title: Results
+  - title: "Key Results"
     content: |
-      | Task | Metric | Heuristic | **SAS (Ours)** |
+      | Benchmark | Model | Heuristic (Best) | **SAS (Ours)** |
       | :--- | :--- | :--- | :--- |
-      | Sudoku | Accuracy | 82.0% | **91.8%** |
-      | GSM8K | Pass@1 | 64.0% | **76.0%** |
-      | MBPP | Pass@1 | 39.5% | **41.0%** |
-
-citation: |
-  @article{xu2026scheduling,
-    title={Scheduling Thoughts: Learning the Order of Thought in Diffusion Language Models},
-    author={Xu, Jiawei and Liu, Minghui and Agrawal, Aakriti and Chen, Yifan and Huang, Furong},
-    journal={arXiv preprint},
-    year={2026}
-  }
+      | **Sudoku** | SMDM-1B | 82.0% | **91.8%** |
+      | **GSM8K** | LLaDA-8B | 64.0% | **76.0%** |
+      | **MBPP** | LLaDA-8B | 39.5% | **41.0%** |
