@@ -1,7 +1,333 @@
 <!doctype html>
 <html lang="en">
-  <body style="overflow-x: hidden">
-    <div id="root" />
-    <script type="module" src="/src/pages/index.jsx"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scheduling Thoughts</title>
+    <meta
+      name="description"
+      content="Learning the Order of Thought in Diffusion Language Models"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://jimmyxu123.github.io/SchedulingThoughts/"
+    />
+    <meta property="og:title" content="Scheduling Thoughts" />
+    <meta
+      property="og:description"
+      content="Learning the Order of Thought in Diffusion Language Models"
+    />
+    <meta
+      property="og:image"
+      content="https://jimmyxu123.github.io/SchedulingThoughts/public/teaser.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://jimmyxu123.github.io/SchedulingThoughts/public/teaser.png"
+    />
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="public/favicon-16x16.png" />
+    <style>
+      :root {
+        --bg: #f5f3ee;
+        --panel: #fffdf8;
+        --ink: #1d2433;
+        --muted: #5f6b80;
+        --line: #d8d2c5;
+        --accent: #1f5eff;
+        --accent-soft: #e7efff;
+        --badge: #13294b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Georgia", "Times New Roman", serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, #ffffff 0%, rgba(255, 255, 255, 0) 32%),
+          linear-gradient(180deg, #efe9de 0%, var(--bg) 34%, #f8f6f1 100%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+
+      .hero {
+        background: rgba(255, 253, 248, 0.88);
+        border: 1px solid rgba(19, 41, 75, 0.08);
+        border-radius: 28px;
+        padding: 32px;
+        box-shadow: 0 18px 60px rgba(31, 46, 77, 0.08);
+        backdrop-filter: blur(8px);
+      }
+
+      .venue {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: var(--badge);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(2.2rem, 5vw, 4.2rem);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+        max-width: 720px;
+      }
+
+      .authors,
+      .affils {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        margin-top: 28px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid rgba(29, 36, 51, 0.08);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 40px rgba(31, 46, 77, 0.05);
+      }
+
+      .card h2 {
+        margin: 0 0 16px;
+        font-size: 1.25rem;
+      }
+
+      .teaser {
+        width: 100%;
+        display: block;
+        border-radius: 18px;
+        border: 1px solid rgba(29, 36, 51, 0.08);
+      }
+
+      p,
+      li,
+      td,
+      th {
+        line-height: 1.65;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.98rem;
+      }
+
+      th,
+      td {
+        padding: 11px 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+      }
+
+      th {
+        font-size: 0.9rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      pre {
+        margin: 0;
+        padding: 18px;
+        overflow-x: auto;
+        border-radius: 18px;
+        background: #f1ede4;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+
+      .footer {
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: 0.92rem;
+        text-align: center;
+      }
+
+      @media (max-width: 820px) {
+        .hero {
+          padding: 24px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <span class="venue">ICML 2026</span>
+        <h1>Scheduling Thoughts</h1>
+        <p class="subtitle">
+          Learning the Order of Thought in Diffusion Language Models
+        </p>
+        <div class="authors">
+          <span><a href="https://jimmy-xu.netlify.app/" target="_blank" rel="noreferrer">Jiawei Xu</a><sup>1</sup></span>
+          <span>Minghui Liu<sup>1</sup></span>
+          <span>Aakriti Agrawal<sup>1</sup></span>
+          <span>Yifan Chen<sup>2</sup></span>
+          <span>Furong Huang<sup>1</sup></span>
+        </div>
+        <div class="affils">
+          <span><sup>1</sup> University of Maryland</span>
+          <span><sup>2</sup> UCLA</span>
+        </div>
+        <div class="links">
+          <a class="btn primary" href="https://arxiv.org/abs/2606.23567" target="_blank" rel="noreferrer">Paper</a>
+          <a class="btn" href="https://github.com/jimmyxu123/SchedulingThoughts" target="_blank" rel="noreferrer">Code</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Abstract</h2>
+          <p>
+            Masked diffusion language models (MDMs) decode by iteratively
+            unmasking tokens. While the sequence of unmasking, the
+            <strong>"order of thought,"</strong> crucially impacts generation
+            quality, it is usually determined by simple heuristics. We introduce
+            <strong>Self-Aware Scheduling (SAS)</strong>, a method that learns a
+            lightweight order policy using
+            <strong>Group Relative Policy Optimization (GRPO)</strong>.
+          </p>
+        </article>
+
+        <aside class="card">
+          <img
+            class="teaser"
+            src="public/teaser.png"
+            alt="Scheduling Thoughts teaser"
+          />
+        </aside>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Key Contributions</h2>
+          <ul>
+            <li><strong>Principled Policy Optimization:</strong> We treat unmasking order as a reinforcement learning problem.</li>
+            <li><strong>SAS Framework:</strong> Learns a lightweight policy for a frozen denoiser.</li>
+            <li><strong>Performance Gains:</strong> Significant improvements in Sudoku accuracy and mathematical reasoning.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Results</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Metric</th>
+                <th>Heuristic</th>
+                <th>SAS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sudoku</td>
+                <td>Accuracy</td>
+                <td>82.0%</td>
+                <td><strong>91.8%</strong></td>
+              </tr>
+              <tr>
+                <td>GSM8K</td>
+                <td>Pass@1</td>
+                <td>64.0%</td>
+                <td><strong>76.0%</strong></td>
+              </tr>
+              <tr>
+                <td>MBPP</td>
+                <td>Pass@1</td>
+                <td>39.5%</td>
+                <td><strong>41.0%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="card" style="margin-top: 28px;">
+        <h2>Citation</h2>
+        <pre><code>@inproceedings{xu2026scheduling,
+  title={Scheduling Thoughts: Learning the Order of Thought in Diffusion Language Models},
+  author={Xu, Jiawei and Liu, Minghui and Agrawal, Aakriti and Chen, Yifan and Huang, Furong},
+  booktitle={International Conference on Machine Learning (ICML)},
+  year={2026}
+}</code></pre>
+      </section>
+
+      <p class="footer">
+        Project page for sharing the paper and key results.
+      </p>
+    </main>
   </body>
 </html>
