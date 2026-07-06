@@ -6,7 +6,6 @@
     "dev": "vite",
     "clean": "rm -rf build/",
     "build": "vite build",
-    "postbuild": "react-snap",
     "preview": "vite preview",
     "format": "prettier src/ --check",
     "format:fix": "prettier -w src/ --check",
